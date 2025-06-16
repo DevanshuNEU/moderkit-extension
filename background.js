@@ -44,10 +44,9 @@ class ModerKitBackground {
           this.apiKey = result.gemini_api_key;
           console.log('API key loaded from storage');
         } else {
-          // Default API key - should be configurable in production
-          this.apiKey = 'AIzaSyCgaWouwXNVL9wD_nTKykI91mp4R_wi-ks';
-          chrome.storage.local.set({ gemini_api_key: this.apiKey });
-          console.log('API key stored');
+          // No API key configured - user needs to set it in options
+          console.warn('No API key configured. Extension will use fallback analysis only.');
+          console.log('Please configure your Gemini API key in the extension options.');
         }
         resolve();
       });
@@ -105,6 +104,11 @@ class ModerKitBackground {
           });
           break;
 
+        case 'SET_API_KEY':
+          await this.setApiKey(message.data.apiKey);
+          sendResponse({ success: true });
+          break;
+
         default:
           sendResponse({ success: false, error: 'Unknown message type' });
       }
@@ -114,11 +118,17 @@ class ModerKitBackground {
     }
   }
 
+  async setApiKey(apiKey) {
+    this.apiKey = apiKey;
+    await chrome.storage.local.set({ gemini_api_key: apiKey });
+    console.log('API key updated');
+  }
+
   async analyzeContentWithGemini(data) {
     const { text, url } = data;
     
     if (!this.apiKey) {
-      throw new Error('API key not configured');
+      throw new Error('API key not configured - using fallback analysis');
     }
 
     if (!text || text.length < 10) {
@@ -353,7 +363,7 @@ Rules:
       timestamp: Date.now()
     };
     
-    this.memoryStore.set(memoryId, memoryEntry);
+    this.memoryStore.set(memoryId, memoryId);
     this.saveStoredData();
     
     return memoryId;
