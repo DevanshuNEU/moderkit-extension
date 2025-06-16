@@ -383,4 +383,450 @@ function getQuickAnalysis(text) {
 
 // Determine flag level
 function determineFlagLevel(analysis) {
+  if (analysis.highSeverity || analysis.toxicity > 0.7) {
+    return 'HIGH';
+  } else if (analysis.mediumSeverity || analysis.toxicity > 0.4 || analysis.spam > 0.5) {
+    return 'MEDIUM';
+  }
+  return 'LOW';
+}
+
+// Enhance with AI in background
+async function enhanceWithAI(element, text, quickAnalysis) {
+  try {
+    const response = await sendMessageWithTimeout({
+      type: 'ANALYZE_CONTENT_AI',
+      data: { 
+        text: text,
+        url: window.location.href,
+        elementType: element.tagName.toLowerCase()
+      }
+    }, 5000);
+
+    if (response.success && response.analysis) {
+      updateElementWithEnhancedAnalysis(element, response.analysis);
+    }
+  } catch (error) {
+    console.log('AI enhancement skipped:', error.message);
+  }
+}
+
+// Send message with timeout
+function sendMessageWithTimeout(message, timeout = 5000) {
+  return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error('Message timeout'));
+    }, timeout);
+
+    try {
+      chrome.runtime.sendMessage(message, (response) => {
+        clearTimeout(timeoutId);
+        
+        if (chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message));
+        } else {
+          resolve(response || { success: false, error: 'No response' });
+        }
+      });
+    } catch (error) {
+      clearTimeout(timeoutId);
+      reject(error);
+    }
+  });
+}
+
+// Add visual flag to element
+function addVisualFlag(element, analysis, flagColor = 'red') {
+  const colors = {
+    red: {
+      outline: '#ff4444',
+      background: 'rgba(255, 68, 68, 0.1)',
+      shadow: '0 0 8px rgba(255, 68, 68, 0.5)'
+    },
+    orange: {
+      outline: '#ff8c00',
+      background: 'rgba(255, 140, 0, 0.1)', 
+      shadow: '0 0 8px rgba(255, 140, 0, 0.5)'
+    },
+    yellow: {
+      outline: '#ffd700',
+      background: 'rgba(255, 215, 0, 0.1)',
+      shadow: '0 0 8px rgba(255, 215, 0, 0.5)'
+    }
+  };
+
+  const colorScheme = colors[flagColor] || colors.red;
   
+  element.style.outline = `3px solid ${colorScheme.outline}`;
+  element.style.outlineOffset = '2px';
+  element.style.backgroundColor = colorScheme.background;
+  element.style.boxShadow = colorScheme.shadow;
+  element.style.cursor = 'pointer';
+  element.style.borderRadius = '4px';
+  element.style.transition = 'all 0.3s ease';
+  
+  overlayElements.add(element);
+  
+  const confidence = Math.round((analysis.confidence || 0.5) * 100);
+  const toxicity = Math.round((analysis.toxicity || 0) * 100);
+  const spam = Math.round((analysis.spam || 0) * 100);
+  
+  const severityText = flagColor === 'red' ? 'HIGH RISK' : flagColor === 'orange' ? 'MEDIUM RISK' : 'LOW RISK';
+  
+  element.title = `${severityText} | Confidence: ${confidence}% | Toxicity: ${toxicity}% | Spam: ${spam}%`;
+  
+  element.dataset.moderkit = JSON.stringify({...analysis, flagColor});
+  element.dataset.moderkitSeverity = flagColor;
+  
+  element.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    showAnalysisPopup(element, analysis, flagColor);
+  }, { once: false });
+  
+  element.addEventListener('mouseenter', () => {
+    element.style.transform = 'scale(1.02)';
+    element.style.zIndex = '1000';
+  });
+  
+  element.addEventListener('mouseleave', () => {
+    element.style.transform = 'scale(1)';
+    element.style.zIndex = '';
+  });
+  
+  console.log(`Flagged (${flagColor.toUpperCase()}): ${element.textContent.substring(0, 50)}...`);
+}
+
+// Add approval pulse to element
+function addApprovalPulse(element) {
+  element.style.transition = 'box-shadow 0.3s ease';
+  element.style.boxShadow = '0 0 4px rgba(76, 175, 80, 0.6)';
+  
+  setTimeout(() => {
+    element.style.boxShadow = '';
+  }, 1500);
+}
+
+// Update element with enhanced AI analysis
+function updateElementWithEnhancedAnalysis(element, aiAnalysis) {
+  if (!element.dataset.moderkit) return;
+  
+  try {
+    const currentAnalysis = JSON.parse(element.dataset.moderkit);
+    const enhancedAnalysis = { ...currentAnalysis, ...aiAnalysis, enhanced: true };
+    
+    const newFlagLevel = determineFlagLevel(aiAnalysis);
+    const currentFlagLevel = element.dataset.moderkitSeverity;
+    
+    if (newFlagLevel !== currentFlagLevel) {
+      const newColor = newFlagLevel === 'HIGH' ? 'red' : newFlagLevel === 'MEDIUM' ? 'orange' : 'yellow';
+      updateElementVisuals(element, enhancedAnalysis, newColor);
+    }
+    
+    element.dataset.moderkit = JSON.stringify(enhancedAnalysis);
+    element.dataset.moderkitSeverity = newFlagLevel.toLowerCase();
+    
+    console.log('AI enhanced analysis applied');
+  } catch (error) {
+    console.log('Failed to update with AI analysis:', error);
+  }
+}
+
+// Update element visuals
+function updateElementVisuals(element, analysis, flagColor) {
+  const colors = {
+    red: {
+      outline: '#ff4444',
+      background: 'rgba(255, 68, 68, 0.1)',
+      shadow: '0 0 8px rgba(255, 68, 68, 0.5)'
+    },
+    orange: {
+      outline: '#ff8c00',
+      background: 'rgba(255, 140, 0, 0.1)', 
+      shadow: '0 0 8px rgba(255, 140, 0, 0.5)'
+    },
+    yellow: {
+      outline: '#ffd700',
+      background: 'rgba(255, 215, 0, 0.1)',
+      shadow: '0 0 8px rgba(255, 215, 0, 0.5)'
+    }
+  };
+
+  const colorScheme = colors[flagColor] || colors.red;
+  
+  element.style.outline = `3px solid ${colorScheme.outline}`;
+  element.style.backgroundColor = colorScheme.background;
+  element.style.boxShadow = colorScheme.shadow;
+}
+
+// Show detailed analysis popup
+function showAnalysisPopup(element, analysis, flagColor = 'red') {
+  document.querySelectorAll('.moderkit-popup').forEach(p => p.remove());
+  
+  const popup = document.createElement('div');
+  popup.className = 'moderkit-popup';
+  
+  // Create unique identifier for this element-popup pair
+  const uniqueId = 'moderkit_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  popup.dataset.targetElement = uniqueId;
+  element.dataset.moderkitId = uniqueId;
+  
+  const popupColors = {
+    red: '#ff4444',
+    orange: '#ff8c00', 
+    yellow: '#ffd700'
+  };
+  
+  const borderColor = popupColors[flagColor] || popupColors.red;
+  const severityText = flagColor === 'red' ? 'HIGH RISK CONTENT' : flagColor === 'orange' ? 'MEDIUM RISK CONTENT' : 'LOW RISK CONTENT';
+  
+  popup.style.cssText = `
+    position: fixed;
+    top: 50px;
+    right: 20px;
+    width: 400px;
+    background: white;
+    border: 3px solid ${borderColor};
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    z-index: 99999;
+    font-family: system-ui;
+    font-size: 14px;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: slideIn 0.3s ease;
+  `;
+  
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  `;
+  document.head.appendChild(style);
+  
+  const confidence = Math.round((analysis.confidence || 0.5) * 100);
+  const toxicity = Math.round((analysis.toxicity || 0) * 100);
+  const spam = Math.round((analysis.spam || 0) * 100);
+  
+  popup.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+      <h3 style="margin: 0; color: #333; display: flex; align-items: center; gap: 8px;">
+        ${severityText}
+      </h3>
+      <button onclick="this.parentElement.parentElement.remove()" style="
+        background: none; border: none; font-size: 24px; cursor: pointer; color: #999;
+        width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      ">×</button>
+    </div>
+    
+    <div style="background: ${flagColor === 'red' ? '#fff5f5' : flagColor === 'orange' ? '#fff8f0' : '#fffef0'}; 
+                padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid ${borderColor};">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <strong>Confidence:</strong>
+        <span style="color: ${confidence > 80 ? '#f44336' : confidence > 60 ? '#ff9800' : '#4CAF50'}; font-weight: 600;">
+          ${confidence}%
+        </span>
+      </div>
+      
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <strong>Toxicity:</strong>
+        <span style="color: ${toxicity > 70 ? '#f44336' : toxicity > 40 ? '#ff9800' : '#4CAF50'}; font-weight: 600;">
+          ${toxicity}%
+        </span>
+      </div>
+      
+      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+        <strong>Spam:</strong>
+        <span style="color: ${spam > 70 ? '#f44336' : spam > 40 ? '#ff9800' : '#4CAF50'}; font-weight: 600;">
+          ${spam}%
+        </span>
+      </div>
+    </div>
+    
+    <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 12px; color: #666;">
+      <strong>Content Preview:</strong><br>
+      <div style="margin-top: 8px; font-style: italic; line-height: 1.4;">
+        "${element.textContent.substring(0, 200).replace(/"/g, '&quot;')}${element.textContent.length > 200 ? '...' : ''}"
+      </div>
+    </div>
+    
+    <div style="display: flex; gap: 10px;">
+      <button id="mark-safe-btn-${uniqueId}" style="
+        flex: 1; background: #4CAF50; color: white; border: none; 
+        padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 500;
+      ">Mark Safe</button>
+      <button onclick="this.parentElement.parentElement.remove()" style="
+        flex: 1; background: #f44336; color: white; border: none; 
+        padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 500;
+      ">Confirm Flag</button>
+    </div>
+  `;
+  
+  document.body.appendChild(popup);
+  overlayElements.add(popup);
+  
+  // Add event listener AFTER the popup is added to DOM
+  const markSafeBtn = document.getElementById(`mark-safe-btn-${uniqueId}`);
+  if (markSafeBtn) {
+    markSafeBtn.addEventListener('click', function() {
+      window.markElementSafe(uniqueId);
+    });
+  }
+  
+  setTimeout(() => {
+    if (popup.parentElement) popup.remove();
+  }, 20000);
+}
+
+// Clear all overlays
+function clearAllOverlays() {
+  clearAllOverlaysInternal();
+  console.log('All overlays cleared');
+}
+
+function clearAllOverlaysInternal() {
+  console.log('Clearing all ModerKit overlays...');
+  
+  document.querySelectorAll('.moderkit-popup').forEach(el => {
+    el.remove();
+  });
+  
+  overlayElements.forEach(element => {
+    if (element && element.style) {
+      element.style.outline = '';
+      element.style.outlineOffset = '';
+      element.style.backgroundColor = '';
+      element.style.boxShadow = '';
+      element.style.cursor = '';
+      element.style.borderRadius = '';
+      element.style.transition = '';
+      element.style.transform = '';
+      element.style.zIndex = '';
+      element.title = '';
+      
+      delete element.dataset.moderkit;
+      delete element.dataset.moderkitSeverity;
+    }
+  });
+  
+  overlayElements.clear();
+  
+  console.log('All overlays cleared');
+}
+
+// Refresh analysis
+function refreshAnalysis() {
+  console.log('Refreshing analysis...');
+  
+  analyzed = 0;
+  flagged = 0;
+  approved = 0;
+  processedElements = new WeakSet();
+  
+  clearAllOverlaysInternal();
+  
+  setTimeout(() => startAnalysis(), 500);
+}
+
+// Update background stats
+function updateBackgroundStats() {
+  try {
+    chrome.runtime.sendMessage({
+      type: 'UPDATE_STATS',
+      data: { analyzed, flagged, approved }
+    });
+  } catch (error) {
+    console.log('Could not update background stats:', error);
+  }
+}
+
+// Show completion message
+function showCompletionMessage() {
+  const message = document.createElement('div');
+  message.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #4285f4, #34a853);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(66, 133, 244, 0.3);
+    z-index: 99998;
+    font-family: system-ui;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  `;
+  
+  message.innerHTML = `
+    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+      <strong>Analysis Complete</strong>
+    </div>
+    <div style="font-size: 13px; opacity: 0.9;">
+      Analyzed: ${analyzed} | Flagged: ${flagged} | Approved: ${approved}
+    </div>
+  `;
+  
+  document.body.appendChild(message);
+  overlayElements.add(message);
+  
+  setTimeout(() => {
+    if (message.parentElement) {
+      message.style.transform = 'translateX(100%)';
+      message.style.transition = 'transform 0.3s ease';
+      setTimeout(() => {
+        message.remove();
+        overlayElements.delete(message);
+      }, 300);
+    }
+  }, 6000);
+}
+
+// Show notification
+function showNotification(message, type = 'info') {
+  const colors = {
+    info: '#2196F3',
+    error: '#f44336',
+    warning: '#ff9800',
+    success: '#4CAF50'
+  };
+
+  const notification = document.createElement('div');
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: ${colors[type]};
+    color: white;
+    padding: 12px 16px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 99999;
+    font-family: system-ui;
+    font-size: 14px;
+  `;
+  notification.textContent = message;
+
+  document.body.appendChild(notification);
+  overlayElements.add(notification);
+  
+  setTimeout(() => {
+    if (notification.parentElement) {
+      notification.style.transform = 'translateX(100%)';
+      notification.style.transition = 'transform 0.3s ease';
+      setTimeout(() => {
+        notification.remove();
+        overlayElements.delete(notification);
+      }, 300);
+    }
+  }, 4000);
+}
+
+// Initialize the script
+initialize();
+
+console.log('ModerKit content script loaded and ready');

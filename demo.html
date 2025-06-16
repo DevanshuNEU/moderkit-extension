@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ModerKit - Professional Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background: #f8f9fa;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+        }
+        
+        .demo-section {
+            margin: 30px 0;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: white;
+        }
+        
+        .high-risk {
+            border-left: 5px solid #ff4444;
+            background: #fff5f5;
+        }
+        
+        .medium-risk {
+            border-left: 5px solid #ff8c00;
+            background: #fff8f0;
+        }
+        
+        .low-risk {
+            border-left: 5px solid #4CAF50;
+            background: #f0fff0;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .content-item {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .stats-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #667eea;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+            min-width: 200px;
+        }
+        
+        .stats-panel h3 {
+            margin: 0 0 15px 0;
+            text-align: center;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .dynamic-content {
+            min-height: 100px;
+            border: 2px dashed #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f9f9f9;
+            margin: 20px 0;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        
+        .instructions {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .emoji {
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="stats-panel">
+        <h3>🛡️ ModerKit</h3>
+        <div class="stat-item">
+            <span>Analyzed:</span>
+            <span id="analyzed-count">0</span>
+        </div>
+        <div class="stat-item">
+            <span>Flagged:</span>
+            <span id="flagged-count">0</span>
+        </div>
+        <div class="stat-item">
+            <span>Safe:</span>
+            <span id="safe-count">0</span>
+        </div>
+    </div>
+
+    <div class="header">
+        <h1>🛡️ ModerKit Professional Demo</h1>
+        <p>Real-time AI content moderation with color-coded overlays</p>
+        <p><strong>Instructions:</strong> Click the ModerKit extension icon → "Refresh Analysis" to see magic happen!</p>
+    </div>
+
+    <div class="instructions">
+        <h3>🎯 How to Test ModerKit</h3>
+        <ol>
+            <li><strong>Install Extension:</strong> Load the ModerKit extension in Chrome</li>
+            <li><strong>Configure API:</strong> Set your Gemini API key in extension options (optional - works without it too!)</li>
+            <li><strong>Run Analysis:</strong> Click the ModerKit icon in your toolbar → "Refresh Analysis"</li>
+            <li><strong>See Results:</strong> Watch content get color-coded overlays in real-time</li>
+            <li><strong>Interact:</strong> Click on flagged content to see detailed analysis popups</li>
+        </ol>
+    </div>
+
+    <div class="demo-section high-risk">
+        <div class="section-header">
+            <span class="emoji">🚨</span>
+            <span>High-Risk Content (Should show RED overlays)</span>
+        </div>
+        
+        <div class="content-item">
+            <p>This is some really toxic content that should definitely be flagged as dangerous.</p>
+        </div>
+        
+        <div class="content-item">
+            <p>I hate this stupid website and everyone who uses it are complete idiots.</p>
+        </div>
+        
+        <div class="content-item">
+            <p>Kill this project immediately, it's a waste of time and all developers are morons.</p>
+        </div>
+        
+        <div class="content-item">
+            <p>This racist garbage needs to be removed from the internet forever.</p>
+        </div>
+    </div>
+
+    <div class="demo-section medium-risk">
+        <div class="section-header">
+            <span class="emoji">⚠️</span>
+            <span>Medium-Risk Content (Should show ORANGE overlays)</span>
+        </div>
+        
+        <div class="content-item">
+            <p>Click here now for amazing deals that you absolutely cannot miss!</p>
+        </div>
+        
+        <div class="content-item">
+            <p>Buy now and get exclusive access to limited time offers! Act fast!</p>
+        </div>
+        
+        <div class="content-item">
+            <p>This content is pretty annoying and might be considered somewhat inappropriate.</p>
+        </div>
+        
+        <div class="content-item">
+            <p>Urgent! Don't miss this incredible opportunity to make money from home!</p>
+        </div>
+        
+        <div class="content-item">
+            <p>FREE MONEY!!! GUARANTEED RESULTS!!! WORK FROM HOME!!! CLICK NOW!!!</p>
+        </div>
+    </div>
+
+    <div class="demo-section low-risk">
+        <div class="section-header">
+            <span class="emoji">✅</span>
+            <span>Safe Content (Should show green pulse or no overlay)</span>
+        </div>
+        
+        <div class="content-item">
+            <p>This is a completely normal paragraph with regular content that should be considered safe and appropriate.</p>
+        </div>
+        
+        <div class="content-item">
+            <p>The weather today is quite pleasant with sunny skies and comfortable temperatures for outdoor activities.</p>
+        </div>
+        
+        <div class="content-item">
+            <p>I enjoy reading books about history, science, and technology topics in my free time.</p>
+        </div>
+        
+        <div class="content-item">
+            <p>The new restaurant downtown serves excellent Italian cuisine with fresh ingredients and great service.</p>
+        </div>
+        
+        <div class="content-item">
+            <p>Technology continues to advance rapidly, creating new opportunities for innovation and growth.</p>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <div class="section-header">
+            <span class="emoji">🔄</span>
+            <span>Dynamic Content Testing</span>
+        </div>
+        
+        <div class="dynamic-content" id="dynamic-content">
+            <p><em>Dynamic content will appear here...</em></p>
+        </div>
+        
+        <div class="controls">
+            <button onclick="addToxicContent()">Add Toxic Content</button>
+            <button onclick="addSpamContent()">Add Spam Content</button>
+            <button onclick="addSafeContent()">Add Safe Content</button>
+            <button onclick="clearDynamicContent()">Clear All</button>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <div class="section-header">
+            <span class="emoji">🧪</span>
+            <span>Real-World Examples</span>
+        </div>
+        
+        <div class="content-item">
+            <h4>Social Media Comment:</h4>
+            <p>OMG this is so stupid! The developers are complete idiots and this app sucks!</p>
+        </div>
+        
+        <div class="content-item">
+            <h4>Promotional Content:</h4>
+            <p>🔥 EXCLUSIVE OFFER! Click here to earn $5000/month working from home! Limited time only! 💰</p>
+        </div>
+        
+        <div class="content-item">
+            <h4>News Article:</h4>
+            <p>Scientists have discovered a new method for renewable energy production that could revolutionize the industry.</p>
+        </div>
+        
+        <div class="content-item">
+            <h4>Product Review:</h4>
+            <p>This product exceeded my expectations. The quality is excellent and the customer service was very helpful.</p>
+        </div>
+    </div>
+
+    <script>
+        const toxicContent = [
+            "This is absolutely terrible and everyone involved should be fired immediately.",
+            "I hate these stupid changes, the developers are complete morons.",
+            "Kill this feature, it's the worst thing I've ever seen online.",
+            "This racist content needs to be banned from the internet.",
+            "You're all idiots if you think this is good."
+        ];
+
+        const spamContent = [
+            "🔥 CLICK HERE FOR FREE MONEY! Limited time offer!",
+            "Earn $10,000/month working from home! Guaranteed results!",
+            "Buy now! Exclusive deals! Don't miss out! Act fast!",
+            "FREE TRIAL!!! AMAZING RESULTS!!! CLICK NOW!!!",
+            "Urgent: Your account needs verification. Click here immediately!"
+        ];
+
+        const safeContent = [
+            "This is a great article about sustainable development and environmental conservation.",
+            "I really enjoyed reading this thoughtful analysis of current market trends.",
+            "The user interface is clean and intuitive, making navigation very easy.",
+            "Thanks for sharing this helpful tutorial on web development best practices.",
+            "The customer support team was very responsive and solved my issue quickly."
+        ];
+
+        function addToxicContent() {
+            addContent(toxicContent, '🚨 High Risk');
+        }
+
+        function addSpamContent() {
+            addContent(spamContent, '⚠️ Medium Risk');
+        }
+
+        function addSafeContent() {
+            addContent(safeContent, '✅ Safe');
+        }
+
+        function addContent(contentArray, label) {
+            const container = document.getElementById('dynamic-content');
+            const randomContent = contentArray[Math.floor(Math.random() * contentArray.length)];
+            
+            const div = document.createElement('div');
+            div.style.cssText = `
+                margin: 10px 0;
+                padding: 15px;
+                background: white;
+                border-radius: 8px;
+                border-left: 4px solid #667eea;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                animation: slideIn 0.3s ease;
+            `;
+            
+            div.innerHTML = `
+                <small style="color: #666; font-weight: 600;">${label} - Added ${new Date().toLocaleTimeString()}</small>
+                <p style="margin: 8px 0 0 0;">${randomContent}</p>
+            `;
+            
+            container.appendChild(div);
+            
+            // Trigger ModerKit to analyze new content
+            setTimeout(() => {
+                if (window.chrome && chrome.runtime) {
+                    chrome.runtime.sendMessage({type: 'CONTENT_ADDED'});
+                }
+            }, 100);
+        }
+
+        function clearDynamicContent() {
+            const container = document.getElementById('dynamic-content');
+            container.innerHTML = '<p><em>Dynamic content cleared...</em></p>';
+        }
+
+        // Auto-add content periodically for demo
+        setInterval(() => {
+            if (Math.random() > 0.7) {
+                const contentTypes = [addToxicContent, addSpamContent, addSafeContent];
+                const randomType = contentTypes[Math.floor(Math.random() * contentTypes.length)];
+                randomType();
+            }
+        }, 8000);
+
+        // Update stats counter (mock data for demo)
+        function updateStats() {
+            const analyzed = document.querySelectorAll('.content-item').length;
+            const flagged = Math.floor(analyzed * 0.3);
+            const safe = analyzed - flagged;
+            
+            document.getElementById('analyzed-count').textContent = analyzed;
+            document.getElementById('flagged-count').textContent = flagged;
+            document.getElementById('safe-count').textContent = safe;
+        }
+
+        // Initial stats update
+        updateStats();
+
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateY(-10px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        console.log('🛡️ ModerKit Demo Page Loaded');
+        console.log('📊 Ready for content analysis');
+    </script>
+</body>
+</html>

@@ -7,8 +7,7 @@
     "activeTab",
     "storage",
     "tabs",
-    "scripting",
-    "host_permissions"
+    "scripting"
   ],
   "host_permissions": [
     "http://*/*",
@@ -21,7 +20,6 @@
     {
       "matches": ["<all_urls>"],
       "js": ["content/content.js"],
-      "css": ["content/content.css"],
       "run_at": "document_end"
     }
   ],
@@ -40,11 +38,5 @@
     "32": "assets/icons/icon32.png",
     "48": "assets/icons/icon48.png",
     "128": "assets/icons/icon128.png"
-  },
-  "web_accessible_resources": [
-    {
-      "resources": ["assets/*", "memory/*"],
-      "matches": ["<all_urls>"]
-    }
-  ]
+  }
 }

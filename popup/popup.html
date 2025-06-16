@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ModerKit</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 380px;
+      height: 500px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 20px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .logo-icon {
+      font-size: 24px;
+    }
+
+    .logo-text {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4CAF50;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .stats-section {
+      padding: 20px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stat-number {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: white;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .controls {
+      padding: 0 20px 20px;
+    }
+
+    .control-btn {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: rgba(255, 255, 255, 0.9);
+      color: #667eea;
+    }
+
+    .btn-primary:hover {
+      background: white;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .page-info {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .page-url {
+      font-size: 13px;
+      opacity: 0.8;
+      margin-bottom: 8px;
+      word-break: break-all;
+    }
+
+    .page-stats {
+      display: flex;
+      gap: 15px;
+      font-size: 12px;
+    }
+
+    .page-stat {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 15px 20px;
+      background: rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    .footer-text {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <span class="logo-icon">🛡️</span>
+      <span class="logo-text">ModerKit</span>
+    </div>
+    <div class="status">
+      <span class="status-dot"></span>
+      <span id="status-text">Active</span>
+    </div>
+  </div>
+
+  <div class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="analyzed-count">0</div>
+        <div class="stat-label">Analyzed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="flagged-count">0</div>
+        <div class="stat-label">Flagged</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="approved-count">0</div>
+        <div class="stat-label">Approved</div>
+      </div>
+    </div>
+
+    <div class="page-info">
+      <div class="page-url" id="current-url">Loading current page...</div>
+      <div class="page-stats">
+        <div class="page-stat">
+          <span>🔍</span>
+          <span id="page-analyzed">0</span>
+          <span>elements</span>
+        </div>
+        <div class="page-stat">
+          <span>⚠️</span>
+          <span id="page-flagged">0</span>
+          <span>flags</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="refresh-btn" class="control-btn btn-primary">
+      <span id="refresh-icon">🔄</span>
+      <span id="refresh-text">Refresh Analysis</span>
+    </button>
+    
+    <button id="clear-btn" class="control-btn btn-secondary">
+      <span>🧹</span>
+      <span>Clear Overlays</span>
+    </button>
+  </div>
+
+  <div class="footer">
+    <div class="footer-text" id="footer-text">Ready to analyze content</div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
