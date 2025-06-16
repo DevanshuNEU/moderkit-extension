@@ -1,115 +1,160 @@
-# ModerKit Browser Extension
+# ModerKit
 
-> AI-powered content moderation with persistent memory - Built for the future of browser-based AI workflows
+<div align="center">
 
-[![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-green.svg)](https://github.com/DevanshuNEU/moderkit-extension)
-[![AI Powered](https://img.shields.io/badge/AI-Powered-blue.svg)](https://github.com/DevanshuNEU/moderkit-extension)
-[![Memory Layer](https://img.shields.io/badge/Memory-Layer-orange.svg)](https://github.com/DevanshuNEU/moderkit-extension)
+**AI-powered content moderation browser extension with real-time analysis**
 
-## 🚀 Overview
+[![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-4285F4?logo=googlechrome&logoColor=white)](https://github.com/DevanshuNEU/moderkit-extension)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/DevanshuNEU/moderkit-extension)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-ModerKit transforms your browser into an intelligent content moderation workspace. It combines real-time AI analysis with persistent memory to create context-aware moderation across all your browsing sessions.
+[Features](#features) • [Demo](#demo) • [Installation](#installation) • [Usage](#usage) • [Contributing](#contributing)
 
-**Key Features:**
-- 🧠 **Persistent Memory**: Remembers moderation patterns and user preferences across sessions
-- ⚡ **Real-time Analysis**: Instant content evaluation as you browse
-- 🎯 **Smart Overlays**: Non-intrusive UI that enhances familiar interfaces  
-- 🔧 **Extensible**: Built for developers who understand AI workflow automation
+![ModerKit Demo](https://github.com/DevanshuNEU/moderkit-extension/assets/demo-screenshot.png)
 
-## 🎯 Perfect For
+</div>
 
-- **Content Moderators**: Streamline review workflows with AI assistance
-- **Community Managers**: Maintain consistent moderation across platforms
-- **Developers**: Example of browser extension + memory layer integration
-- **AI Enthusiasts**: See how persistent context enhances user experience
+## What is ModerKit?
 
-## 🚀 Quick Start
+ModerKit is a browser extension that automatically detects and flags potentially harmful content on web pages using AI. It helps content moderators, community managers, and online safety professionals identify toxic, spam, or inappropriate content in real-time.
+
+### Key Features
+
+- 🤖 **AI-Powered Analysis** - Uses Google Gemini AI for accurate toxicity detection
+- 🎨 **Visual Indicators** - Color-coded overlays (Red: High risk, Orange: Medium risk, Green: Safe)
+- ⚡ **Real-Time Processing** - Analyzes content as you browse with parallel processing
+- 🎯 **Interactive Moderation** - Click flagged content for detailed analysis and override decisions
+- 📊 **Statistics Tracking** - Monitor analysis results across browsing sessions
+- 🔄 **Dynamic Content** - Automatically detects and analyzes newly loaded content
+
+## Demo
+
+![ModerKit in Action](https://github.com/DevanshuNEU/moderkit-extension/assets/demo-gif.gif)
+
+**Try it yourself:**
+1. Load the extension
+2. Visit any content-heavy website (Wikipedia, news sites, forums)
+3. Click the ModerKit icon and hit "Refresh Analysis"
+4. Watch as content gets automatically flagged with colored overlays
+
+## Installation
+
+### Quick Start
+
+1. **Download the Extension**
+   ```bash
+   git clone https://github.com/DevanshuNEU/moderkit-extension.git
+   cd moderkit-extension
+   ```
+
+2. **Load in Chrome**
+   - Open Chrome and go to `chrome://extensions/`
+   - Enable "Developer mode" (toggle in top-right)
+   - Click "Load unpacked" and select the `moderkit-extension` folder
+
+3. **Start Using**
+   - The ModerKit icon will appear in your browser toolbar
+   - Visit any website and click the icon to begin analysis
 
 ### Prerequisites
-- Chrome Browser (v88+)
-- Basic understanding of browser extensions
 
-### Installation
+- Chrome Browser (v88+) or any Chromium-based browser
+- No additional dependencies required
 
-1. **Load Extension**
-   - Open Chrome → Extensions → Developer Mode (ON)
-   - Click "Load unpacked" → Select moderkit-extension folder
-   - Extension icon appears in toolbar
+## Usage
 
-2. **First Run**
-   - Click ModerKit icon → Follow setup wizard
-   - Grant necessary permissions for full functionality
+### Basic Operation
 
-## 🧠 Memory Layer Integration
+1. **Navigate** to any website with text content
+2. **Click** the ModerKit extension icon in your toolbar
+3. **Press** "Refresh Analysis" to scan the current page
+4. **View Results** with color-coded overlays:
+   - 🔴 **Red**: High-risk content (toxicity > 70%)
+   - 🟠 **Orange**: Medium-risk content (toxicity 40-70%)
+   - 🟢 **Green pulse**: Safe content
 
-ModerKit uses Mem0 MCP (Model Context Protocol) for persistent memory:
+### Interactive Features
 
-```javascript
-// Example: Remembering moderation patterns
-const memoryService = new MemoryService();
-await memoryService.remember('user_preference', {
-  strictness: 'medium',
-  categories: ['spam', 'harassment'],
-  context: 'social_media_platform'
-});
-```
+- **Click flagged content** to see detailed analysis
+- **Use "Mark Safe"** to override AI decisions
+- **View statistics** in the extension popup
+- **Clear overlays** to reset the page view
 
-## 🛠️ Development
+### Configuration
 
-### Project Structure
+The extension works out-of-the-box with sensible defaults. For advanced configuration:
+
+- Open the extension popup for real-time statistics
+- Use the "Clear Overlays" button to remove all visual indicators
+- The extension remembers your moderation decisions across sessions
+
+## How It Works
+
+ModerKit uses a two-layer analysis system:
+
+1. **Quick Pattern Detection** - Immediate local analysis for instant feedback
+2. **AI Enhancement** - Google Gemini API for detailed toxicity scoring
+
+The extension processes content in parallel batches for optimal performance and includes comprehensive fallback systems for reliability.
+
+## Project Structure
+
 ```
 moderkit-extension/
-├── manifest.json           # Chrome extension configuration
-├── background.js           # Service worker for cross-tab coordination
-├── content/               # Content scripts injected into web pages
-├── popup/                # Extension popup interface  
-├── memory/               # Memory layer integration (Mem0 MCP)
-├── moderation/           # AI content analysis engine
-├── utils/                # Shared utilities and storage
-└── assets/              # Icons and styling
+├── manifest.json          # Extension configuration
+├── background.js          # Service worker & API integration
+├── content/
+│   └── content.js         # Page analysis & visual overlays
+├── popup/
+│   ├── popup.html         # Extension interface
+│   └── popup.js           # UI controller
+├── assets/
+│   └── icons/             # Extension icons
+└── demo.html              # Test page for development
 ```
 
-### Key Components
+## Contributing
 
-1. **Background Service Worker**
-   - Coordinates between tabs
-   - Manages persistent connections
-   - Handles memory storage
+Contributions are welcome! This project is perfect for developers interested in:
 
-2. **Content Scripts**
-   - Analyze page content in real-time
-   - Inject moderation overlays
-   - Communicate with background worker
+- Browser extension development
+- AI/ML integration
+- Content moderation tools
+- Chrome Extension APIs
 
-3. **Memory Layer**
-   - Persistent context across sessions
-   - Learning from moderation decisions
-   - Smart suggestions based on history
+### Development Setup
 
-## 🌟 Why This Matters
+1. Fork the repository
+2. Clone your fork: `git clone https://github.com/YOUR_USERNAME/moderkit-extension.git`
+3. Make your changes
+4. Test thoroughly with the included `demo.html`
+5. Submit a pull request
 
-This extension showcases the future of browser-based AI:
+### Reporting Issues
 
-1. **Context Awareness**: AI that remembers and learns from your workflows
-2. **Seamless Integration**: Enhancement rather than replacement of existing interfaces  
-3. **Cross-Session Intelligence**: Memory that persists beyond single browsing sessions
-4. **Developer-Friendly**: Clean architecture for building similar AI-enhanced tools
+Found a bug or have a feature request? Please [open an issue](https://github.com/DevanshuNEU/moderkit-extension/issues) with:
 
-## 🎯 Built For
+- Clear description of the problem
+- Steps to reproduce
+- Browser version and operating system
+- Screenshots if applicable
 
-This extension was built to demonstrate browser-based AI capabilities, specifically:
-- Persistent memory integration in browser extensions
-- Real-time content analysis workflows
-- Clean architecture for AI-enhanced browser tools
-- Modern development practices for extension building
+## License
 
-Perfect example for companies building browser-based AI copilots and intelligent browsing experiences.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📄 License
+## Acknowledgments
 
-MIT License - see [LICENSE](LICENSE) file for details.
+- Built with [Google Gemini AI](https://gemini.google.com/) for content analysis
+- Inspired by the need for better online content moderation tools
+- Thanks to the open-source community for Chrome Extension best practices
 
 ---
 
-**Made with ❤️ by Devanshu Chicholikar**  
-*Full-Stack Engineer passionate about AI-enhanced browser experiences*
+<div align="center">
+
+**Built by [Devanshu Chicholikar](https://github.com/DevanshuNEU)**
+
+⭐ Star this repo if you find it useful!
+
+</div>
